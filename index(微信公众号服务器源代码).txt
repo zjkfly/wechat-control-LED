@@ -1,0 +1,207 @@
+<?php
+ $ch = curl_init();
+//require "125.php";
+require "laiba.class.php";
+define("TOKEN", "weixin");
+$wechatObj = new wechatCallbackapiTest();
+if (isset($_GET['echostr'])) {
+    $wechatObj->valid();
+}else{
+    $wechatObj->responseMsg();
+}
+
+class wechatCallbackapiTest
+{
+    public function valid()
+    {
+        $echoStr = $_GET["echostr"];
+        if($this->checkSignature()){
+            header('content-type:text');
+            echo $echoStr;
+            exit;
+        }
+    }
+
+    private function checkSignature()
+    {
+        $signature = $_GET["signature"];
+        $timestamp = $_GET["timestamp"];
+        $nonce = $_GET["nonce"];
+
+        $token = TOKEN;
+        $tmpArr = array($token, $timestamp, $nonce);
+        sort($tmpArr, SORT_STRING);
+        $tmpStr = implode( $tmpArr );
+        $tmpStr = sha1( $tmpStr );
+
+        if( $tmpStr == $signature ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function responseMsg()
+    {
+        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+
+        if (!empty($postStr)){
+            $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+            $fromUsername = $postObj->FromUserName;
+            $toUsername = $postObj->ToUserName;
+            $keyword = trim($postObj->Content);
+            $event = trim($postObj->Event);
+            $time = time();
+            $textTpl = "<xml>
+                        <ToUserName><![CDATA[%s]]></ToUserName>
+                        <FromUserName><![CDATA[%s]]></FromUserName>
+                        <CreateTime>%s</CreateTime>
+                        <MsgType><![CDATA[%s]]></MsgType>
+                        <Content><![CDATA[%s]]></Content>
+                        <FuncFlag>0</FuncFlag>
+                        </xml>";
+           
+
+            if($keyword == "关灯")
+            {
+                
+                $uri = "http://www.yeelink.net/developer/debug";
+				// 参数数组
+			$data = array (
+      				  'data[url]' => 'http://api.yeelink.net/v1.0/device/350801/sensor/393889/datapoints',
+      				  'data[apikey]'=>'c150855ad22d2940a71f343d76217e06',
+       					 'data[request_type]'=>'post',
+     				   'data[post_data]'=>'{"value":0}'
+				// 'password' => 'password'
+					);
+ 
+					$ch = curl_init ();
+				// print_r($ch);
+				curl_setopt ( $ch, CURLOPT_URL, $uri );
+				curl_setopt ( $ch, CURLOPT_POST, 1 );
+				curl_setopt ( $ch, CURLOPT_HEADER, 0 );
+					curl_setopt ( $ch, CURLOPT_RETURNTRANSFER,0);
+				curl_setopt ( $ch, CURLOPT_POSTFIELDS, $data );
+
+
+$return = curl_exec ( $ch );
+curl_close ( $ch );
+
+                
+                
+                $msgType = "text";
+                $contentStr = "正在关灯。稍等";
+                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+                echo $resultStr;
+            }
+            if($keyword == "开灯")
+            {
+               $uri = "http://www.yeelink.net/developer/debug";
+				// 参数数组
+			$data = array (
+      				  'data[url]' => 'http://api.yeelink.net/v1.0/device/350801/sensor/393889/datapoints',
+      				  'data[apikey]'=>'c150855ad22d2940a71f343d76217e06',
+       					 'data[request_type]'=>'post',
+     				   'data[post_data]'=>'{"value":1}'
+				// 'password' => 'password'
+					);
+ 
+					$ch = curl_init ();
+				// print_r($ch);
+				curl_setopt ( $ch, CURLOPT_URL, $uri );
+				curl_setopt ( $ch, CURLOPT_POST, 1 );
+				curl_setopt ( $ch, CURLOPT_HEADER, 0 );
+					curl_setopt ( $ch, CURLOPT_RETURNTRANSFER,0);
+				curl_setopt ( $ch, CURLOPT_POSTFIELDS, $data );
+
+
+$return = curl_exec ( $ch );
+curl_close ( $ch );
+
+                
+                
+                $msgType = "text";
+                $contentStr = "正在开灯。稍等";
+                $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+                echo $resultStr;
+            }
+
+           
+           
+            
+               
+
+                
+
+
+                //查询汽车站的实时进站情况
+                if($keyword >5)
+                {
+                    $line=$keyword;
+                    $a=new WenZheng();
+                    if($a->judge2($line)){
+                        $msgType = "text";
+                        $contentStr = "未开发此路线";
+                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+                        echo $resultStr;
+
+                    }
+                    else{
+                        $line=$keyword;
+                        //通过图文消息展示进站情况
+                        $textTpl ="<xml>
+                                    <ToUserName><![CDATA[%s]]></ToUserName>
+                                    <FromUserName><![CDATA[%s]]></FromUserName>
+                                    <CreateTime>%s</CreateTime>
+                                    <MsgType><![CDATA[news]]></MsgType>
+                                    <ArticleCount>2</ArticleCount>
+                                    <Articles>
+                                    <item>
+                                    <Title><![CDATA[%s]]></Title>
+                                    <Description><![CDATA[别慌张，点击进入成绩单]]></Description>
+                                    <PicUrl><![CDATA[%s]]></PicUrl>
+                                    <Url><![CDATA[%s]]></Url>
+                                    </item>
+                                    <item>
+                                    <Title><![CDATA[%s]]></Title>
+                                    <Description><![CDATA[description]]></Description>
+                                    <PicUrl><![CDATA[http://www.sdwz.cn/files/104126/1205/x_f534268019.JPG]]></PicUrl>
+                                    <Url><![CDATA[%s]]></Url>
+                                    </item>
+                                    </Articles>
+                                    </xml>";
+
+                        $msgType = "text";
+                        $contentStr = $a->getdata($line);
+                        $link_1="http://www.szjt.gov.cn/apts/APTSLine.aspx?LineGuid=".$contentStr[0]['line_go'];
+                        $line_go_1="汽车行驶方向:".$contentStr[0]['line_goal'];
+                        $link_2="http://www.szjt.gov.cn/apts/APTSLine.aspx?LineGuid=".$contentStr[1]['line_go'];
+                        $line_go_2="汽车行驶方向:".$contentStr[1]['line_goal'];
+                        $url="http://static.zhulong.com/photo/small/201204/20/58221_0_0_560_0.jpg";
+                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time,  $line_go_1,$url,  $link_1,  $line_go_2,$link_2);
+                        echo $resultStr;
+
+                    }
+
+
+                }
+                //关注微信号接受信息推送
+
+                if($event== "subscribe")
+                {
+                    $msgType = "text";
+                    $contentStr = "可以使用微信公众号控制小灯";
+                    $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);;
+                    $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
+                    echo $resultStr;
+                }
+
+
+                //以上为对于发送消息的判断及实现功能
+            }else{
+                echo "";
+                exit;
+            }
+        }
+    }
+?>
