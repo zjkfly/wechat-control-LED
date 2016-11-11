@@ -1,7 +1,5 @@
 <?php
  $ch = curl_init();
-//require "125.php";
-require "laiba.class.php";
 define("TOKEN", "weixin");
 $wechatObj = new wechatCallbackapiTest();
 if (isset($_GET['echostr'])) {
@@ -62,14 +60,14 @@ class wechatCallbackapiTest
                         </xml>";
            
 
-            if($keyword == "¹ØµÆ")
+            if($keyword == "å…³ç¯")
             {
                 
                 $uri = "http://www.yeelink.net/developer/debug";
-				// ²ÎÊıÊı×é
+				// å‚æ•°æ•°ç»„
 			$data = array (
       				  'data[url]' => 'http://api.yeelink.net/v1.0/device/350801/sensor/393889/datapoints',
-      				  'data[apikey]'=>'c150855ad22d2940a71f343d76217e06',
+      				 'data[apikey]'=>'ä½ çš„keyå€¼',//è¯·åœ¨è¿™å¡«å…¥ä½ çš„ç”³è¯·çš„key
        					 'data[request_type]'=>'post',
      				   'data[post_data]'=>'{"value":0}'
 				// 'password' => 'password'
@@ -90,20 +88,20 @@ curl_close ( $ch );
                 
                 
                 $msgType = "text";
-                $contentStr = "ÕıÔÚ¹ØµÆ¡£ÉÔµÈ";
+                $contentStr = "æ­£åœ¨å…³ç¯ã€‚ç¨ç­‰";
                 $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
                 echo $resultStr;
             }
-            if($keyword == "¿ªµÆ")
+            if($keyword == "å¼€ç¯")
             {
                $uri = "http://www.yeelink.net/developer/debug";
-				// ²ÎÊıÊı×é
+				// å‚æ•°æ•°ç»„
 			$data = array (
       				  'data[url]' => 'http://api.yeelink.net/v1.0/device/350801/sensor/393889/datapoints',
-      				  'data[apikey]'=>'c150855ad22d2940a71f343d76217e06',
+      				  'data[apikey]'=>'ä½ çš„keyå€¼',//è¯·åœ¨è¿™å¡«å…¥ä½ çš„ç”³è¯·çš„key
        					 'data[request_type]'=>'post',
      				   'data[post_data]'=>'{"value":1}'
-				// 'password' => 'password'
+				
 					);
  
 					$ch = curl_init ();
@@ -121,83 +119,25 @@ curl_close ( $ch );
                 
                 
                 $msgType = "text";
-                $contentStr = "ÕıÔÚ¿ªµÆ¡£ÉÔµÈ";
+                $contentStr = "æ­£åœ¨å¼€ç¯ã€‚ç¨ç­‰";
                 $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
                 echo $resultStr;
             }
 
-           
-           
-            
-               
 
-                
-
-
-                //²éÑ¯Æû³µÕ¾µÄÊµÊ±½øÕ¾Çé¿ö
-                if($keyword >5)
-                {
-                    $line=$keyword;
-                    $a=new WenZheng();
-                    if($a->judge2($line)){
-                        $msgType = "text";
-                        $contentStr = "Î´¿ª·¢´ËÂ·Ïß";
-                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
-                        echo $resultStr;
-
-                    }
-                    else{
-                        $line=$keyword;
-                        //Í¨¹ıÍ¼ÎÄÏûÏ¢Õ¹Ê¾½øÕ¾Çé¿ö
-                        $textTpl ="<xml>
-                                    <ToUserName><![CDATA[%s]]></ToUserName>
-                                    <FromUserName><![CDATA[%s]]></FromUserName>
-                                    <CreateTime>%s</CreateTime>
-                                    <MsgType><![CDATA[news]]></MsgType>
-                                    <ArticleCount>2</ArticleCount>
-                                    <Articles>
-                                    <item>
-                                    <Title><![CDATA[%s]]></Title>
-                                    <Description><![CDATA[±ğ»ÅÕÅ£¬µã»÷½øÈë³É¼¨µ¥]]></Description>
-                                    <PicUrl><![CDATA[%s]]></PicUrl>
-                                    <Url><![CDATA[%s]]></Url>
-                                    </item>
-                                    <item>
-                                    <Title><![CDATA[%s]]></Title>
-                                    <Description><![CDATA[description]]></Description>
-                                    <PicUrl><![CDATA[http://www.sdwz.cn/files/104126/1205/x_f534268019.JPG]]></PicUrl>
-                                    <Url><![CDATA[%s]]></Url>
-                                    </item>
-                                    </Articles>
-                                    </xml>";
-
-                        $msgType = "text";
-                        $contentStr = $a->getdata($line);
-                        $link_1="http://www.szjt.gov.cn/apts/APTSLine.aspx?LineGuid=".$contentStr[0]['line_go'];
-                        $line_go_1="Æû³µĞĞÊ»·½Ïò:".$contentStr[0]['line_goal'];
-                        $link_2="http://www.szjt.gov.cn/apts/APTSLine.aspx?LineGuid=".$contentStr[1]['line_go'];
-                        $line_go_2="Æû³µĞĞÊ»·½Ïò:".$contentStr[1]['line_goal'];
-                        $url="http://static.zhulong.com/photo/small/201204/20/58221_0_0_560_0.jpg";
-                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time,  $line_go_1,$url,  $link_1,  $line_go_2,$link_2);
-                        echo $resultStr;
-
-                    }
-
-
-                }
-                //¹Ø×¢Î¢ĞÅºÅ½ÓÊÜĞÅÏ¢ÍÆËÍ
+                //å…³æ³¨å¾®ä¿¡å·æ¥å—ä¿¡æ¯æ¨é€
 
                 if($event== "subscribe")
                 {
                     $msgType = "text";
-                    $contentStr = "¿ÉÒÔÊ¹ÓÃÎ¢ĞÅ¹«ÖÚºÅ¿ØÖÆĞ¡µÆ";
+                    $contentStr = "å¯ä»¥ä½¿ç”¨å¾®ä¿¡å…¬ä¼—å·æ§åˆ¶å°ç¯";
                     $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);;
                     $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
                     echo $resultStr;
                 }
 
 
-                //ÒÔÉÏÎª¶ÔÓÚ·¢ËÍÏûÏ¢µÄÅĞ¶Ï¼°ÊµÏÖ¹¦ÄÜ
+                //ä»¥ä¸Šä¸ºå¯¹äºå‘é€æ¶ˆæ¯çš„åˆ¤æ–­åŠå®ç°åŠŸèƒ½
             }else{
                 echo "";
                 exit;
